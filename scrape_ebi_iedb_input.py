@@ -30,7 +30,7 @@ def get_data_from_ebi(*arg):
     br.form['chainIndex'] = [None] * (len(args)-1)
     
     for index,choice in enumerate(args[1:]):
-        br.form['chainIndex'][i] = (str(int(choice)-1))
+        br.form['chainIndex'][index] = (str(int(choice)-1))
     submit_response = br.submit().read()
     soup = BeautifulSoup(submit_response)
     
