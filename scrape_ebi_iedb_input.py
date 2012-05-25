@@ -18,21 +18,29 @@ def get_data_from_ebi(*arg):
     submit_response = br.submit(name='Submit', label='Submit')
     html = submit_response.read()
     soup = BeautifulSoup(html)
-    table = soup.find("table",cellspacing=1)
-    all_protein_chains = {}
-    for row in table.findAll('tr')[1:-1]:
-        columns = row.findAll('td')
-        number = columns[1]
-        chain = columns[2]
-        number_of_residues = columns[3]
-        all_protein_chains[number.string] = chain.string
-    br.select_form(name='selectChainForm')
-    br.form['chainIndex'] = [None] * (len(args)-1)
+    all_tables = soup.findAll("table",cellspacing=1)
+    if len(all_tables) == 1:
+	    table = soup.find("table",cellspacing=1)
+	    all_protein_chains = {}
+	    for row in table.findAll('tr')[1:-1]:
+        	columns = row.findAll('td')
+	        number = columns[1]
+        	chain = columns[2]
+	        number_of_residues = columns[3]
+        	all_protein_chains[number.string] = chain.string
+    	    br.select_form(name='selectChainForm')
+   
+    	    br.form['chainIndex'] = [None] * (len(args)-1)
     
-    for index,choice in enumerate(args[1:]):
-        br.form['chainIndex'][index] = (str(int(choice)-1))
-    submit_response = br.submit().read()
-    soup = BeautifulSoup(submit_response)
+            for index,seqchoice in enumerate(args[1:]):
+		
+		for k,v in all_protein_chains.iteritems():
+		
+			if str(v) == str(seqchoice):
+				choice = k
+            br.form['chainIndex'][index] = (str(int(choice)-1))
+    	    submit_response = br.submit().read()
+            soup = BeautifulSoup(submit_response)
     
     for index,tables in enumerate(soup.findAll("table",cellspacing=1)[1:3]):
         if index == 0:
